@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: boringwolf <boringwolf@leandev.io>
+Date: Wed, 8 May 2024 12:42:59 +0800
+Subject: [PATCH] Change Logger Info Of Plugin Updater
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+index f8148953d32294ad540c82398d9b307c39df9087..45a6193722907bbcc1a317bd1e8c0ed728250222 100644
+--- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
++++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+@@ -96,6 +96,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+             Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
+             if (visitor.getValidPlugin() != null) {
+                 Path updateLocation = visitor.getValidPlugin();
++                String updatePluginVersion = this.getPluginVersion(updateLocation);
+ 
+                 try {
+                     Files.copy(updateLocation, file, StandardCopyOption.REPLACE_EXISTING);
+@@ -106,7 +107,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+                 // Idk what this is about, TODO
+                 File newName = new File(file.toFile().getParentFile(), updateLocation.toFile().getName());
+                 file.toFile().renameTo(newName);
+-                LOGGER.info("Updated plugin {} to version {}", pluginName, pluginVersion);
++                LOGGER.info("Updated plugin {} from version {} to version {}", pluginName, updatePluginVersion, pluginVersion);
+                 return newName.toPath();
+             }
+         } catch (Exception e) {

@@ -1,0 +1,89 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: boringwolf <boringwolf@leandev.io>
+Date: Wed, 8 May 2024 12:38:22 +0800
+Subject: [PATCH] updatePluginModify
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+index 5b58df8df7efca0f67e3a14dd71051dfd7a26079..f8148953d32294ad540c82398d9b307c39df9087 100644
+--- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
++++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+@@ -1,10 +1,12 @@
+ package io.papermc.paper.plugin.provider.source;
+ 
++import com.mojang.logging.LogUtils;
+ import io.papermc.paper.plugin.PluginInitializerManager;
+ import io.papermc.paper.plugin.entrypoint.EntrypointHandler;
+ import io.papermc.paper.plugin.provider.type.PluginFileType;
+ import org.bukkit.plugin.InvalidPluginException;
+ import org.jetbrains.annotations.Nullable;
++import org.slf4j.Logger;
+ 
+ import java.io.File;
+ import java.io.IOException;
+@@ -24,6 +26,7 @@ import java.util.jar.JarFile;
+ public class FileProviderSource implements ProviderSource<Path, Path> {
+ 
+     private final Function<Path, String> contextChecker;
++    private static final Logger LOGGER = LogUtils.getClassLogger();
+ 
+     public FileProviderSource(Function<Path, String> contextChecker) {
+         this.contextChecker = contextChecker;
+@@ -88,7 +91,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+ 
+         try {
+             String pluginName = this.getPluginName(file);
+-            UpdateFileVisitor visitor = new UpdateFileVisitor(pluginName);
++            String pluginVersion = this.getPluginVersion(file);
++            UpdateFileVisitor visitor = new UpdateFileVisitor(pluginName, pluginVersion);
+             Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
+             if (visitor.getValidPlugin() != null) {
+                 Path updateLocation = visitor.getValidPlugin();
+@@ -102,7 +106,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+                 // Idk what this is about, TODO
+                 File newName = new File(file.toFile().getParentFile(), updateLocation.toFile().getName());
+                 file.toFile().renameTo(newName);
+-                updateLocation.toFile().delete();
++                LOGGER.info("Updated plugin {} to version {}", pluginName, pluginVersion);
+                 return newName.toPath();
+             }
+         } catch (Exception e) {
+@@ -122,14 +126,27 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+         }
+     }
+ 
++    private String getPluginVersion(Path path) throws Exception {
++        try (JarFile file = new JarFile(path.toFile())) {
++            PluginFileType<?, ?> type = PluginFileType.guessType(file);
++            if (type == null) {
++                throw new IllegalArgumentException(path + " does not contain a " + String.join(" or ", PluginFileType.getConfigTypes()) + "! Could not determine plugin type, cannot load a plugin from it!");
++            }
++
++            return type.getConfig(file).getVersion();
++        }
++    }
++
+     private class UpdateFileVisitor implements FileVisitor<Path> {
+ 
+         private final String targetName;
++        private final String targetVersion;
+         @Nullable
+         private Path validPlugin;
+ 
+-        private UpdateFileVisitor(String targetName) {
++        private UpdateFileVisitor(String targetName, String targetVersion) {
+             this.targetName = targetName;
++            this.targetVersion = targetVersion;
+         }
+ 
+         @Override
+@@ -141,7 +158,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+             try {
+                 String updatePluginName = FileProviderSource.this.getPluginName(file);
+-                if (this.targetName.equals(updatePluginName)) {
++                String updatePluginVersion = FileProviderSource.this.getPluginVersion(file);
++                if (this.targetName.equals(updatePluginName) && !this.targetVersion.equals(updatePluginVersion)) {
+                     this.validPlugin = file;
+                     return FileVisitResult.TERMINATE;
+                 }

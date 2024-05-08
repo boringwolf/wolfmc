@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: boringwolf <boringwolf@leandev.io>
+Date: Wed, 8 May 2024 13:04:14 +0800
+Subject: [PATCH] LogBuggy
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+index 45a6193722907bbcc1a317bd1e8c0ed728250222..e574c83e867eabf4563aed20cee52131bab3c7b6 100644
+--- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
++++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+@@ -107,7 +107,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+                 // Idk what this is about, TODO
+                 File newName = new File(file.toFile().getParentFile(), updateLocation.toFile().getName());
+                 file.toFile().renameTo(newName);
+-                LOGGER.info("Updated plugin {} from version {} to version {}", pluginName, updatePluginVersion, pluginVersion);
++                LOGGER.info("Updated plugin {} from version {} to version {}", pluginName, pluginVersion, updatePluginVersion);
+                 return newName.toPath();
+             }
+         } catch (Exception e) {
