@@ -8,6 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/WolfMC-API" />
+            <option value="$PROJECT_DIR$/WolfMC-Server" />
+            <option value="$PROJECT_DIR$/paper-api-generator" />
           </set>
         </option>
       </GradleProjectSettings>
