@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: boringwolf <boringwolf@leandev.io>
+Date: Wed, 8 May 2024 20:11:58 +0800
+Subject: [PATCH] debug to info
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+index 898e80b953f014a1ea5b09ed2fe0f8e735a8db15..42577887352b225f0fe8fcf9fb7b8e17606a7061 100644
+--- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
++++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+@@ -100,7 +100,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+                 Path updateLocation = visitor.getValidPlugin();
+                 HashCode updateHash = HashCode.fromBytes(Files.readAllBytes(updateLocation));
+ 
+-                LOGGER.debug("Checking for plugin update: {} ({} -> {})", pluginName, pluginHash, updateHash);
++                LOGGER.info("Checking for plugin update: {} ({} -> {})", pluginName, pluginHash, updateHash);
+ 
+                 if (pluginHash.equals(updateHash)) {
+                     return file;
+@@ -118,7 +118,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+                 LOGGER.info("Updated plugin {} from version {} to version {}", pluginName, pluginVersion, updatePluginVersion);
+                 return newName.toPath();
+             }
+-            LOGGER.debug("No update found for plugin {}", pluginName);
++            LOGGER.info("No update found for plugin {}", pluginName);
+         } catch (Exception e) {
+             throw new InvalidPluginException(e);
+         }
