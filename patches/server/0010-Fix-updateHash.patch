@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: boringwolf <ceo@bnsw.me>
+Date: Wed, 15 May 2024 04:50:15 +0800
+Subject: [PATCH] Fix updateHash
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+index 598ba7d6133531448b3135af08feee3072ca4dd7..6b5ed7a85e2b84f649f419c3e223cdd017062877 100644
+--- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
++++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
+@@ -108,15 +108,16 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+             UpdateFileVisitor visitor = new UpdateFileVisitor(pluginName);
+             Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
+ 
+-            LOGGER.info("Checking for plugin update: {} ({})", pluginName, pluginHash.equals(updateHash));
+-
+-            if (pluginHash.equals(updateHash)) {
+-                return file;
+-            }
+             if (visitor.getValidPlugin() != null) {
+                 Path updateLocation = visitor.getValidPlugin();
++                HashCode updateHash = HashCode.fromBytes(Files.readAllBytes(updateLocation));
+                 String updatePluginVersion = this.getPluginVersion(updateLocation);
+ 
++                LOGGER.info("Checking for plugin update: {} ({})", pluginName, pluginHash.equals(updateHash));
++
++                if (pluginHash.equals(updateHash)) {
++                    return file;
++                }
+                 try {
+                     Files.copy(updateLocation, file, StandardCopyOption.REPLACE_EXISTING);
+                 } catch (IOException exception) {

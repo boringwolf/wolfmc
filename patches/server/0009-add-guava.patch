@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: boringwolf <ceo@bnsw.me>
+Date: Wed, 15 May 2024 04:35:54 +0800
+Subject: [PATCH] add guava
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 47d5dcdee472ba308ee9e18d82b56382a2eec516..8fc26f29602f74232ee5bc56287d2d00bf592b12 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -13,6 +13,7 @@ val alsoShade: Configuration by configurations.creating
+ 
+ dependencies {
+     implementation(project(":wolfmc-api"))
++    implementation("com.google.guava:guava:33.2.0-jre") //guava
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
