@@ -5,15 +5,15 @@ Subject: [PATCH] fix
 
 
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-index 42577887352b225f0fe8fcf9fb7b8e17606a7061..4d29aee12d3995441735cfa85432c6d60be88f2f 100644
+index e18399b800725958c6eb7a2b5cce10794be48980..598ba7d6133531448b3135af08feee3072ca4dd7 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-@@ -100,7 +100,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
-                 Path updateLocation = visitor.getValidPlugin();
-                 HashCode updateHash = HashCode.fromBytes(Files.readAllBytes(updateLocation));
+@@ -108,7 +108,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+             UpdateFileVisitor visitor = new UpdateFileVisitor(pluginName);
+             Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
  
--                LOGGER.info("Checking for plugin update: {} ({} -> {})", pluginName, pluginHash, updateHash);
-+                LOGGER.info("Checking for plugin update: {} ({})", pluginName, pluginHash.equals(updateHash));
+-            LOGGER.info("Checking for plugin update: {} ({} -> {})", pluginName, pluginHash, updateHash);
++            LOGGER.info("Checking for plugin update: {} ({})", pluginName, pluginHash.equals(updateHash));
  
-                 if (pluginHash.equals(updateHash)) {
-                     return file;
+             if (pluginHash.equals(updateHash)) {
+                 return file;

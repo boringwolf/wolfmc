@@ -8,19 +8,19 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-index 04b43aa09100700718295c31c4c345717038a1ab..898e80b953f014a1ea5b09ed2fe0f8e735a8db15 100644
+index fa0a65c3666166e6d05ba35d028205d1e3c0d973..51476dcc9be94e13a14d588443633e967af33365 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-@@ -100,6 +100,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
-                 Path updateLocation = visitor.getValidPlugin();
-                 HashCode updateHash = HashCode.fromBytes(Files.readAllBytes(updateLocation));
+@@ -108,6 +108,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+             UpdateFileVisitor visitor = new UpdateFileVisitor(pluginName);
+             Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
  
-+                LOGGER.debug("Checking for plugin update: {} ({} -> {})", pluginName, pluginHash, updateHash);
++            LOGGER.debug("Checking for plugin update: {} ({} -> {})", pluginName, pluginHash, updateHash);
 +
-                 if (pluginHash.equals(updateHash)) {
-                     return file;
-                 }
-@@ -116,6 +118,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+             if (pluginHash.equals(updateHash)) {
+                 return file;
+             }
+@@ -127,6 +129,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
                  LOGGER.info("Updated plugin {} from version {} to version {}", pluginName, pluginVersion, updatePluginVersion);
                  return newName.toPath();
              }

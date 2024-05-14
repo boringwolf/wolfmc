@@ -8,20 +8,8 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 
-diff --git a/build.gradle.kts b/build.gradle.kts
-index 51f1102050960bad3ed321b87ab70dc3b63521eb..607e05e153903b6b63d02a23b60a955ec76ccc86 100644
---- a/build.gradle.kts
-+++ b/build.gradle.kts
-@@ -18,6 +18,7 @@ dependencies {
-     implementation("io.papermc.paper:paper-mojangapi:${project.version}") {
-         exclude("io.papermc.paper", "paper-api")
-     }
-+    implementation("com.google.guava:guava:33.2.0-jre") //guava
-     // WolfMC end
-     // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-index e574c83e867eabf4563aed20cee52131bab3c7b6..04b43aa09100700718295c31c4c345717038a1ab 100644
+index 4656376505dac62bf8778eae8d11566c1a1a337d..fa0a65c3666166e6d05ba35d028205d1e3c0d973 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 @@ -1,5 +1,6 @@
@@ -31,7 +19,7 @@ index e574c83e867eabf4563aed20cee52131bab3c7b6..04b43aa09100700718295c31c4c34571
  import com.mojang.logging.LogUtils;
  import io.papermc.paper.plugin.PluginInitializerManager;
  import io.papermc.paper.plugin.entrypoint.EntrypointHandler;
-@@ -92,12 +93,16 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -103,8 +104,13 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
          try {
              String pluginName = this.getPluginName(file);
              String pluginVersion = this.getPluginVersion(file);
@@ -39,26 +27,14 @@ index e574c83e867eabf4563aed20cee52131bab3c7b6..04b43aa09100700718295c31c4c34571
 +            HashCode pluginHash = HashCode.fromBytes(Files.readAllBytes(file));
 +            UpdateFileVisitor visitor = new UpdateFileVisitor(pluginName);
              Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
++
++            if (pluginHash.equals(updateHash)) {
++                return file;
++            }
              if (visitor.getValidPlugin() != null) {
                  Path updateLocation = visitor.getValidPlugin();
--                String updatePluginVersion = this.getPluginVersion(updateLocation);
-+                HashCode updateHash = HashCode.fromBytes(Files.readAllBytes(updateLocation));
- 
-+                if (pluginHash.equals(updateHash)) {
-+                    return file;
-+                }
-                 try {
-                     Files.copy(updateLocation, file, StandardCopyOption.REPLACE_EXISTING);
-                 } catch (IOException exception) {
-@@ -107,6 +112,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
-                 // Idk what this is about, TODO
-                 File newName = new File(file.toFile().getParentFile(), updateLocation.toFile().getName());
-                 file.toFile().renameTo(newName);
-+                String updatePluginVersion = this.getPluginVersion(updateLocation);
-                 LOGGER.info("Updated plugin {} from version {} to version {}", pluginName, pluginVersion, updatePluginVersion);
-                 return newName.toPath();
-             }
-@@ -141,13 +147,11 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+                 String updatePluginVersion = this.getPluginVersion(updateLocation);
+@@ -152,13 +158,11 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
      private class UpdateFileVisitor implements FileVisitor<Path> {
  
          private final String targetName;
@@ -73,7 +49,7 @@ index e574c83e867eabf4563aed20cee52131bab3c7b6..04b43aa09100700718295c31c4c34571
          }
  
          @Override
-@@ -159,8 +163,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -170,8 +174,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
              try {
                  String updatePluginName = FileProviderSource.this.getPluginName(file);

@@ -5,10 +5,10 @@ Subject: [PATCH] Change Logger Info Of Plugin Updater
 
 
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-index f8148953d32294ad540c82398d9b307c39df9087..45a6193722907bbcc1a317bd1e8c0ed728250222 100644
+index d5e35dcf53dfe277aa2f35959b7c802b91a62831..0aeaf9659663c82a509936eb30493236ca4792ad 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-@@ -96,6 +96,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -107,6 +107,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
              Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
              if (visitor.getValidPlugin() != null) {
                  Path updateLocation = visitor.getValidPlugin();
@@ -16,7 +16,7 @@ index f8148953d32294ad540c82398d9b307c39df9087..45a6193722907bbcc1a317bd1e8c0ed7
  
                  try {
                      Files.copy(updateLocation, file, StandardCopyOption.REPLACE_EXISTING);
-@@ -106,7 +107,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -117,7 +118,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
                  // Idk what this is about, TODO
                  File newName = new File(file.toFile().getParentFile(), updateLocation.toFile().getName());
                  file.toFile().renameTo(newName);

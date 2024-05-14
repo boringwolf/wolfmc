@@ -5,7 +5,7 @@ Subject: [PATCH] updatePluginModify
 
 
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
-index 5b58df8df7efca0f67e3a14dd71051dfd7a26079..f8148953d32294ad540c82398d9b307c39df9087 100644
+index 6b8ed8a0baaf4a57d20e57cec3400af5561ddd79..d5e35dcf53dfe277aa2f35959b7c802b91a62831 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/source/FileProviderSource.java
 @@ -1,10 +1,12 @@
@@ -21,15 +21,15 @@ index 5b58df8df7efca0f67e3a14dd71051dfd7a26079..f8148953d32294ad540c82398d9b307c
  
  import java.io.File;
  import java.io.IOException;
-@@ -24,6 +26,7 @@ import java.util.jar.JarFile;
- public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -25,6 +27,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
  
      private final Function<Path, String> contextChecker;
+     private final boolean applyRemap;
 +    private static final Logger LOGGER = LogUtils.getClassLogger();
  
-     public FileProviderSource(Function<Path, String> contextChecker) {
+     public FileProviderSource(Function<Path, String> contextChecker, boolean applyRemap) {
          this.contextChecker = contextChecker;
-@@ -88,7 +91,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -99,7 +102,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
  
          try {
              String pluginName = this.getPluginName(file);
@@ -39,7 +39,7 @@ index 5b58df8df7efca0f67e3a14dd71051dfd7a26079..f8148953d32294ad540c82398d9b307c
              Files.walkFileTree(updateDirectory, Set.of(), 1, visitor);
              if (visitor.getValidPlugin() != null) {
                  Path updateLocation = visitor.getValidPlugin();
-@@ -102,7 +106,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -113,7 +117,7 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
                  // Idk what this is about, TODO
                  File newName = new File(file.toFile().getParentFile(), updateLocation.toFile().getName());
                  file.toFile().renameTo(newName);
@@ -48,7 +48,7 @@ index 5b58df8df7efca0f67e3a14dd71051dfd7a26079..f8148953d32294ad540c82398d9b307c
                  return newName.toPath();
              }
          } catch (Exception e) {
-@@ -122,14 +126,27 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -133,14 +137,27 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
          }
      }
  
@@ -77,7 +77,7 @@ index 5b58df8df7efca0f67e3a14dd71051dfd7a26079..f8148953d32294ad540c82398d9b307c
          }
  
          @Override
-@@ -141,7 +158,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
+@@ -152,7 +169,8 @@ public class FileProviderSource implements ProviderSource<Path, Path> {
          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
              try {
                  String updatePluginName = FileProviderSource.this.getPluginName(file);
